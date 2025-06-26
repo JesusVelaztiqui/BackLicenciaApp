@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-
 public class Respuestas {
     public static String grabado = "Registro grabado con éxito";
     public static String eliminado = "Registro eliminado con éxito";

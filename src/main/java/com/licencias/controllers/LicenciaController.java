@@ -1,23 +1,28 @@
 package com.licencias.controllers;
 
-import com.licencias.Services.LicenciaServices;
+import com.licencias.Services.LicenciaService;
 import com.licencias.models.Formatos;
 import com.licencias.models.Licencias;
 import com.licencias.models.Response;
+import com.licencias.models.Respuestas;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
+@CrossOrigin
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/licencias")
 public class LicenciaController {
     private final Formatos formatos;
-    private final LicenciaServices licenciaServices;
+    private final LicenciaService licenciaServices;
 
     @GetMapping("/recuperar")
-    public Response<Licencias> recuperar() {
-        return formatos.getResponseDto(licenciaServices.recuperar());
+    public Response<Licencias> recuperar(@RequestParam String ruc) {
+        return formatos.getResponseDto(licenciaServices.recuperar(ruc));
     }
+
+    @PostMapping("/grabar")
+    public Response<Respuestas> grabar(@RequestBody Licencias licencia) {
+        return formatos.getResponseDto(licenciaServices.grabar(licencia));
+    }
+
 }
