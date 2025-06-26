@@ -27,7 +27,7 @@ public class LicenciasImpl implements LicenciaService {
              ResultSet rs = ps.executeQuery()
         ) {
             if (rs.next()) {
-                Licencias lic = Licencias.builder()
+                Licencias licencia = Licencias.builder()
                         .id(rs.getLong("id"))
                         .licruc(rs.getLong("licruc"))
                         .lictel(rs.getLong("lictel"))
@@ -41,7 +41,7 @@ public class LicenciasImpl implements LicenciaService {
                         .licfechaingreso(rs.getObject("licfechaingreso", java.time.LocalDate.class))
                         .licfechafin(rs.getObject("licfechafin", java.time.LocalDate.class))
                         .build();
-                return lic;
+                return licencia;
             }
         }
 
