@@ -19,7 +19,7 @@ public class LicenciaImplemets implements LicenciaServices {
 
     @Override
     @SneakyThrows
-    public Licencias recuperar() {
+    public Licencias recuperar(String ruc) {
         try (Connection conexion = utilConexion.getConexion();
              PreparedStatement ps = conexion.prepareStatement("SELECT * FROM licencias");
              ResultSet rs = ps.executeQuery()
