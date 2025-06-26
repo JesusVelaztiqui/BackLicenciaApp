@@ -7,6 +7,7 @@ import com.licencias.models.Licencias;
 import com.licencias.models.Respuestas;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
@@ -72,7 +73,7 @@ INSERT INTO public.licencias(
             ps.setBoolean(12,licencia.isLicestado());
             ps.setObject(13,licencia.getLicfechaingreso());
             ps.setObject(14,licencia.getLicfechafin());
-            String nombreDb = "Cliente" + licencia.getLicruc();
+            Long nombreDb = licencia.getLicruc();
             String sql = "CREATE DATABASE \"" + nombreDb + "\"";
 
             ps.execute();
