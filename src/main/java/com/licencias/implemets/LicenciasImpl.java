@@ -7,7 +7,6 @@ import com.licencias.models.Licencias;
 import com.licencias.models.Respuestas;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
@@ -22,28 +21,31 @@ public class LicenciasImpl implements LicenciaService {
 
     @Override
     @SneakyThrows
-    public Licencias recuperar(String ruc) {
+    public Licencias recuperar(Long ruc) {
         try (Connection conexion = utilConexion.getConexion();
-             PreparedStatement ps = conexion.prepareStatement("SELECT * FROM licencias");
-             ResultSet rs = ps.executeQuery()
+             PreparedStatement ps = conexion.prepareStatement("SELECT * FROM licencias WHERE licruc = ?");
         ) {
-            if (rs.next()) {
-                Licencias licencia = Licencias.builder()
-                        .id(rs.getLong("id"))
-                        .licruc(rs.getLong("licruc"))
-                        .lictel(rs.getLong("lictel"))
-                        .licnombre(rs.getString("licnombre"))
-                        .licapellido(rs.getString("licapellido"))
-                        .licdireccion(rs.getString("licdireccion"))
-                        .licemail(rs.getString("licemail"))
-                        .licpassword(rs.getString("licpassword"))
-                        .licmotivofechafin(rs.getString("licmotivofechafin"))
-                        .licestado(rs.getBoolean("licestado"))
-                        .licfechaingreso(rs.getObject("licfechaingreso", java.time.LocalDate.class))
-                        .licfechafin(rs.getObject("licfechafin", java.time.LocalDate.class))
-                        .build();
-                return licencia;
+            ps.setLong(1, ruc);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Licencias licencia = Licencias.builder()
+                            .id(rs.getLong("id"))
+                            .licruc(rs.getLong("licruc"))
+                            .lictel(rs.getLong("lictel"))
+                            .licnombre(rs.getString("licnombre"))
+                            .licapellido(rs.getString("licapellido"))
+                            .licdireccion(rs.getString("licdireccion"))
+                            .licemail(rs.getString("licemail"))
+                            .licpassword(rs.getString("licpassword"))
+                            .licmotivofechafin(rs.getString("licmotivofechafin"))
+                            .licestado(rs.getBoolean("licestado"))
+                            .licfechaingreso(rs.getObject("licfechaingreso", java.time.LocalDate.class))
+                            .licfechafin(rs.getObject("licfechafin", java.time.LocalDate.class))
+                            .build();
+                    return licencia;
+                }
             }
+
         }
 
         return null;
@@ -51,10 +53,10 @@ public class LicenciasImpl implements LicenciaService {
 
     @Override
     @SneakyThrows
-    public Respuestas grabar(Licencias licencia) {
+    public Respuestas createLicencia(Licencias licencia) {
         try (Connection conexion = utilConexion.getConexion();
         PreparedStatement ps = conexion.prepareStatement("""
-INSERT INTO public.licencias(
+INSERT INTO licencias(
 	 licruc, lictel, licport, licnombre, licapellido, licdireccion, licemail, licpassword, licmotivofechafin, licip, licpasdatabase,
                              licestado, licfechaingreso, licfechafin)
 	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?);
@@ -86,6 +88,27 @@ INSERT INTO public.licencias(
             return new Respuestas(true,Respuestas.grabado,0);
         }
 
+    }
+
+    @Override
+    @SneakyThrows
+    public Respuestas deleteLicencia(Licencias licencia){
+    try (Connection conexion = utilConexion.getConexion();
+        PreparedStatement ps = conexion.prepareStatement("""
+DELETE FROM licencias WHERE licruc = ? AND id = ?
+""");){
+        ps.setLong(1, licencia.getLicruc());
+        ps.setLong(2, licencia.getId());
+        ps.execute();
+        String deleteBase =  "DROP DATABASE \"" + licencia.getLicruc() + "\"";
+        try (Connection conexion2 = utilConexionUsuario.getConexion();
+             PreparedStatement ps2 = conexion2.prepareStatement(deleteBase)
+        ){
+            ps2.execute();
+        }
+    }
+
+        return new Respuestas(true,Respuestas.eliminado,0);
     }
 
 }

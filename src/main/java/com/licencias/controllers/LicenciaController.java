@@ -16,13 +16,18 @@ public class LicenciaController {
     private final LicenciaService licenciaServices;
 
     @GetMapping("/recuperar")
-    public Response<Licencias> recuperar(@RequestParam String ruc) {
+    public Response<Licencias> recuperar(@RequestParam Long ruc) {
         return formatos.getResponseDto(licenciaServices.recuperar(ruc));
     }
 
     @PostMapping("/grabar")
     public Response<Respuestas> grabar(@RequestBody Licencias licencia) {
-        return formatos.getResponseDto(licenciaServices.grabar(licencia));
+        return formatos.getResponseDto(licenciaServices.createLicencia(licencia));
+    }
+
+    @DeleteMapping("/delete")
+    public Response<Respuestas> delete(@RequestBody Licencias licencia) {
+        return formatos.getResponseDto(licenciaServices.deleteLicencia(licencia));
     }
 
 }

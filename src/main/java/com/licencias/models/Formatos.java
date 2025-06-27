@@ -1,11 +1,12 @@
 package com.licencias.models;
-
 import org.springframework.stereotype.Component;
-
 import java.util.List;
+
+
 
 @Component
 public class Formatos {
+
     public <T> Response<T> getResponseDto(T obj){
         if(obj instanceof List){
             return new Response<>(200,obj,"",((List) obj).size());
