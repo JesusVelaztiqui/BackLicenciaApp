@@ -11,7 +11,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Builder
 public class Licencias {
-    private Long id,licruc,lictel,licport;
+    private String licruc,lictel;
+    private Long id,licport;
     private String licnombre,licapellido,licdireccion,licemail,licpassword,licmotivofechafin,licip,licpasdatabase;
     private boolean licestado;
     private LocalDate licfechaingreso,licfechafin;

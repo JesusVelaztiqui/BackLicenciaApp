@@ -1,10 +1,7 @@
 package com.licencias.controllers;
 
 import com.licencias.Services.LicenciaService;
-import com.licencias.models.Formatos;
-import com.licencias.models.Licencias;
-import com.licencias.models.Response;
-import com.licencias.models.Respuestas;
+import com.licencias.models.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 @CrossOrigin
@@ -15,13 +12,14 @@ public class LicenciaController {
     private final Formatos formatos;
     private final LicenciaService licenciaServices;
 
-    @GetMapping("/recuperar")
-    public Response<Licencias> recuperar(@RequestParam Long ruc) {
-        return formatos.getResponseDto(licenciaServices.recuperar(ruc));
+    @PostMapping("/iniciarSesion")
+    public Response<Licencias> recuperar(@RequestBody Usuario usuario) {
+        return formatos.getResponseDto(licenciaServices.recuperar(usuario));
     }
 
     @PostMapping("/grabar")
     public Response<Respuestas> grabar(@RequestBody Licencias licencia) {
+        System.out.println(licencia);
         return formatos.getResponseDto(licenciaServices.createLicencia(licencia));
     }
 
