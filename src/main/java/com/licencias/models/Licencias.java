@@ -14,7 +14,7 @@ public class Licencias {
     private String licruc,lictel;
     private Long id,licport;
     private String licnombre,licapellido,licdireccion,licemail,licpassword,licmotivofechafin,licip,licpasdatabase;
-    private boolean licestado;
+    private boolean licestado ,prueba,anual;
     private LocalDate licfechaingreso,licfechafin;
 
 }

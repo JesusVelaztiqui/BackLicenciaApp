@@ -24,38 +24,69 @@ public class LicenciasImpl implements LicenciaService {
     public Licencias recuperar(Usuario usuario) {
         try (Connection conexion = utilConexion.getConexion();
              PreparedStatement ps = conexion.prepareStatement(
-                     "SELECT * FROM licencias WHERE licemail = ? AND licpassword = ?")) {
+                     "SELECT * FROM licencias WHERE licemail = ? AND licpassword = ?");
+             PreparedStatement psEstado = conexion.prepareStatement("UPDATE licencias SET licestado = false WHERE id = ?")
+             ) {
 
             ps.setString(1, usuario.getEmail());
             ps.setString(2, usuario.getPass());
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    if(rs.getBoolean("licestado")){
-                        return Licencias.builder()
-                                .id(rs.getLong("id"))
-                                .licruc(rs.getString("licruc"))
-                                .lictel(rs.getString("lictel"))
-                                .licnombre(rs.getString("licnombre"))
-                                .licapellido(rs.getString("licapellido"))
-                                .licdireccion(rs.getString("licdireccion"))
-                                .licemail(rs.getString("licemail"))
-                                .licpassword(rs.getString("licpassword"))
-                                .licmotivofechafin(rs.getString("licmotivofechafin"))
-                                .licestado(rs.getBoolean("licestado"))
-                                .licfechaingreso(rs.getObject("licfechaingreso", java.time.LocalDate.class))
-                                .licfechafin(rs.getObject("licfechafin", java.time.LocalDate.class))
-                                .build();
-                    }else{
+                    java.time.LocalDate fechaIngreso = rs.getObject("licfechaingreso", java.time.LocalDate.class);
+                    java.time.LocalDate fechaFin = rs.getObject("licfechafin", java.time.LocalDate.class);
+
+                    boolean estado = rs.getBoolean("licestado");
+                    boolean prueba = rs.getBoolean("prueba");
+                    boolean anual = rs.getBoolean("anual");
+                    if (prueba) {
+                        long periodoPrueba = java.time.temporal.ChronoUnit.DAYS.between(fechaIngreso, fechaFin);
+                        if(periodoPrueba>=16){
+                            psEstado.setLong(1, rs.getLong("id"));
+                            psEstado.executeUpdate();
+                            throw new ModelNotFoundException("Tu periodo gratuito terminó. Suscríbete y disfruta sin interrupciones.");
+                        }
+                    }else if(!prueba  && !anual){
+                        long periodoMensual = java.time.temporal.ChronoUnit.DAYS.between(fechaIngreso, fechaFin);
+                        if(periodoMensual>31){
+                            psEstado.setLong(1, rs.getLong("id"));
+                            psEstado.executeUpdate();
+
+                        }
+                    }else if(!prueba && anual){
+                        long periodoAnual = java.time.temporal.ChronoUnit.DAYS.between(fechaIngreso, fechaFin);
+                        if(periodoAnual>366){
+                            psEstado.setLong(1, rs.getLong("id"));
+                            psEstado.executeUpdate();
+
+                        }
+                    } if(!estado){
                         throw new ModelNotFoundException("Tu licencia ha caducado. Renueva para continuar.");
                     }
-
+                    return Licencias.builder()
+                            .id(rs.getLong("id"))
+                            .licruc(rs.getString("licruc"))
+                            .lictel(rs.getString("lictel"))
+                            .licnombre(rs.getString("licnombre"))
+                            .licapellido(rs.getString("licapellido"))
+                            .licdireccion(rs.getString("licdireccion"))
+                            .licemail(rs.getString("licemail"))
+                            .licpassword(rs.getString("licpassword"))
+                            .licmotivofechafin(rs.getString("licmotivofechafin"))
+                            .licestado(estado)
+                            .prueba(prueba)
+                            .anual(anual)
+                            .licfechaingreso(fechaIngreso)
+                            .licfechafin(fechaFin)
+                            .build();
                 } else {
                     throw new ModelNotFoundException("Usuario no encontrado. Puedes registrarte y comenzar.");
                 }
             }
         }
     }
+
+
 
     @Override
     @SneakyThrows
