@@ -17,10 +17,14 @@ public class LicenciaController {
         return formatos.getResponseDto(licenciaServices.recuperar(usuario));
     }
 
-    @PostMapping("/grabar")
+    @PostMapping("/crear")
     public Response<Respuestas> grabar(@RequestBody Licencias licencia) {
-        System.out.println(licencia);
         return formatos.getResponseDto(licenciaServices.createLicencia(licencia));
+    }
+
+    @PostMapping("/crearPrueba")
+    public Response<Respuestas> grabarprueba(@RequestBody Licencias licencia) {
+        return formatos.getResponseDto(licenciaServices.crearLicenciaPrueba(licencia));
     }
 
     @DeleteMapping("/delete")
